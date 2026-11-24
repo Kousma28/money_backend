@@ -7,6 +7,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;   // ✅ Ajouté
+use Illuminate\Database\Eloquent\Relations\HasMany;  // ✅ Ajouté
 
 class User extends Authenticatable
 {
@@ -40,6 +42,21 @@ class User extends Authenticatable
         return $this->belongsTo(Country::class);
     }
 
+    public function wallet(): HasOne
+    {
+        return $this->hasOne(Wallet::class);
+    }
+
+    public function transfersSent(): HasMany
+    {
+        return $this->hasMany(Transfer::class, 'sender_id');
+    }
+
+    public function transfersReceived(): HasMany
+    {
+        return $this->hasMany(Transfer::class, 'receiver_id');
+    }
+
     // ─── Helpers ─────────────────────────────────────────────────
 
     /**
@@ -59,20 +76,5 @@ class User extends Authenticatable
         return filled($this->first_name)
             && filled($this->last_name)
             && filled($this->pin);
-    }
-    
-    public function wallet(): HasOne
-    {
-        return $this->hasOne(\App\Models\Wallet::class);
-    }
- 
-    public function transfersSent(): HasMany
-    {
-        return $this->hasMany(\App\Models\Transfer::class, 'sender_id');
-    }
- 
-    public function transfersReceived(): HasMany
-    {
-        return $this->hasMany(\App\Models\Transfer::class, 'receiver_id');
     }
 }
